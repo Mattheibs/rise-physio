@@ -57,9 +57,9 @@
   --charcoal: #454243;
   --espresso: #1e1712;
   --smoke: #615c57;
-  --moss: #2f3a2d;
-  --moss-rgb: 47, 58, 45;
-  --sage: #dcdfd0;
+  --moss: rgba(51, 48, 47, 1);
+  --moss-rgb: 51, 48, 47;
+  --sage: rgba(229, 226, 222, 1);
   --clay: #b98e6b;
 
   /* semantic */
@@ -847,19 +847,19 @@ br.br-mob {
   inset: 0;
   background:
     linear-gradient(
-      90deg,
-      rgba(var(--moss-rgb), 0.92) 0%,
-      rgba(var(--moss-rgb), 0.82) 35%,
-      rgba(var(--moss-rgb), 0.6) 55%,
-      rgba(var(--moss-rgb), 0.25) 70%,
-      rgba(var(--moss-rgb), 0) 100%
+      to top,
+      rgba(51, 48, 47, 0.92) 0%,
+      rgba(51, 48, 47, 0.82) 15%,
+      rgba(51, 48, 47, 0.6) 35%,
+      rgba(51, 48, 47, 0.25) 60%,
+      rgba(51, 48, 47, 0) 85%
     ),
     linear-gradient(
-      180deg,
-      rgba(var(--moss-rgb), 0.55) 0%,
-      rgba(var(--moss-rgb), 0) 15%,
-      rgba(var(--moss-rgb), 0) 75%,
-      rgba(var(--moss-rgb), 0.9) 100%
+      to bottom,
+      rgba(51, 48, 47, 0.55) 0%,
+      rgba(51, 48, 47, 0) 25%,
+      rgba(51, 48, 47, 0) 70%,
+      rgba(51, 48, 47, 0.9) 100%
     );
 }
 .hero__inner {
