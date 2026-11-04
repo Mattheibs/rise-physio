@@ -41,7 +41,6 @@
   src: url("../assets/fonts/figtree-latin-500-normal.woff2") format("woff2");
 }
 
-
 :root {
   /* primitives */
   --white: #ffffff;
@@ -627,14 +626,6 @@ body.is-locked {
   border-bottom: 1px solid var(--border-inverse-subtle);
   font: 300 32px/1.1 var(--font-display);
   text-transform: uppercase;
-}
-.menu__links .icon {
-  width: 20px;
-  height: 20px;
-  transition: transform 0.35s var(--ease-out);
-}
-.menu__links a:hover .icon {
-  transform: rotate(45deg);
 }
 .menu__actions {
   display: flex;
