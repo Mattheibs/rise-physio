@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# TODO: uncomment once the live domain is known (must be a full URL)
+# Sitemap: https://YOUR-DOMAIN/sitemap.xml

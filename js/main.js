@@ -29,15 +29,19 @@
   };
   const setActive = (id) => {
     const target = links.find(l => l.getAttribute('href') === '#' + id) || links[0];
-    links.forEach(l => { const on = l === target; l.classList.toggle('is-active', on); on ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current'); });
+    links.forEach(l => {
+      const on = l === target;
+      l.classList.toggle('is-active', on);
+      if (on) l.setAttribute('aria-current', 'true');
+      else l.removeAttribute('aria-current');
+    });
     movePill(target);
   };
   setActive('about');
   window.addEventListener('resize', () => movePill($('.nav__link.is-active')));
-  document.fonts && document.fonts.ready.then(() => movePill($('.nav__link.is-active')));
+  document.fonts?.ready.then(() => movePill($('.nav__link.is-active')));
 
-  const spyIds = ['about', 'areas', 'alex', 'pricing', 'faqs', 'contact'];
-  const spyTargets = spyIds.map(id => document.getElementById(id)).filter(Boolean);
+  const spyTargets = links.map(l => document.getElementById(l.hash.slice(1))).filter(Boolean);
   const spy = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) setActive(e.target.id); });
   }, { rootMargin: '-45% 0px -50% 0px' });
@@ -97,20 +101,22 @@
   }
 
   /* ---------- Collapsibles ---------- */
-  const setRegion = (region, open) => { if (!region) return; open ? region.removeAttribute('inert') : region.setAttribute('inert', ''); };
+  const setRegion = (region, open) => region?.toggleAttribute('inert', !open);
+
+  // Shared click handler for "Read more" style toggles (label swaps via data-open / data-closed)
+  const bindToggle = (btn, region, label) => btn.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') !== 'true';
+    btn.setAttribute('aria-expanded', String(open));
+    region.classList.toggle('is-open', open);
+    setRegion(region, open);
+    label.textContent = open ? label.dataset.open : label.dataset.closed;
+  });
 
   // Area cards
   $$('.card__toggle').forEach(btn => {
     const region = document.getElementById(btn.getAttribute('aria-controls'));
-    const label = btn.querySelector('.card__toggle-label');
     setRegion(region, false);
-    btn.addEventListener('click', () => {
-      const open = btn.getAttribute('aria-expanded') !== 'true';
-      btn.setAttribute('aria-expanded', String(open));
-      region.classList.toggle('is-open', open);
-      setRegion(region, open);
-      label.textContent = open ? label.dataset.open : label.dataset.closed;
-    });
+    bindToggle(btn, region, $('.card__toggle-label', btn));
   });
 
   // FAQs: one open at a time
@@ -131,19 +137,19 @@
   // Alex "Read more" (mobile only)
   const alexBtn = $('.alex__toggle');
   const alexBio = $('#alex-bio');
+  const alexLabel = $('span', alexBtn);
   const mqMobile = window.matchMedia('(max-width: 767.98px)');
   const syncAlex = () => {
-    if (!mqMobile.matches) { alexBio.classList.remove('is-open'); alexBio.removeAttribute('inert'); alexBtn.setAttribute('aria-expanded', 'false'); return; }
+    if (!mqMobile.matches) {
+      alexBio.classList.remove('is-open');
+      setRegion(alexBio, true);
+      alexBtn.setAttribute('aria-expanded', 'false');
+      alexLabel.textContent = alexLabel.dataset.closed;
+      return;
+    }
     setRegion(alexBio, alexBtn.getAttribute('aria-expanded') === 'true');
   };
-  alexBtn.addEventListener('click', () => {
-    const open = alexBtn.getAttribute('aria-expanded') !== 'true';
-    alexBtn.setAttribute('aria-expanded', String(open));
-    alexBio.classList.toggle('is-open', open);
-    setRegion(alexBio, open);
-    const s = alexBtn.querySelector('span');
-    s.textContent = open ? s.dataset.open : s.dataset.closed;
-  });
+  bindToggle(alexBtn, alexBio, alexLabel);
   mqMobile.addEventListener('change', syncAlex);
   syncAlex();
 
@@ -154,7 +160,7 @@
   const setDot = (i) => dots.forEach((d, j) => { d.classList.toggle('is-active', i === j); d.setAttribute('aria-selected', String(i === j)); });
   dots.forEach((d, i) => d.addEventListener('click', () => {
     const pad = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
-    track.scrollTo({ left: cards[i].offsetLeft - pad - track.offsetLeft * 0, behavior: reduce ? 'auto' : 'smooth' });
+    track.scrollTo({ left: cards[i].offsetLeft - pad, behavior: reduce ? 'auto' : 'smooth' });
   }));
   let raf = 0;
   track.addEventListener('scroll', () => {
@@ -164,8 +170,12 @@
       if (max <= 0) return setDot(0);
       if (track.scrollLeft >= max - 4) return setDot(cards.length - 1);
       const x = track.scrollLeft;
+      const padLeft = parseFloat(getComputedStyle(track).paddingLeft);
       let best = 0, bestD = Infinity;
-      cards.forEach((c, i) => { const dd = Math.abs(c.offsetLeft - parseFloat(getComputedStyle(track).paddingLeft) - x); if (dd < bestD) { bestD = dd; best = i; } });
+      cards.forEach((c, i) => {
+        const dd = Math.abs(c.offsetLeft - padLeft - x);
+        if (dd < bestD) { bestD = dd; best = i; }
+      });
       setDot(best);
     });
   }, { passive: true });
